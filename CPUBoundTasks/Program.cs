@@ -10,11 +10,11 @@ namespace CPUBoundTasks
 {
     class Program
     {
-        static  void Main(string[] args)
+        static void Main(string[] args)
         {
-           
+
             DoWork();
-            
+
             Console.WriteLine("this should write first");
             Console.Read();
         }
@@ -23,10 +23,13 @@ namespace CPUBoundTasks
         {
             Stopwatch myStopwatch = new Stopwatch();
             myStopwatch.Start();
-            MyService myClass1 = new MyService();
-            Console.WriteLine(await myClass1.WaitFor2Seconds());
-            Console.WriteLine(myStopwatch.ElapsedMilliseconds);
+            MyService3 myClass1 = new MyService3();
             
+            Console.WriteLine(await 
+                Task.Run(()=>myClass1.WaitFor2Seconds())
+                );
+            Console.WriteLine(myStopwatch.ElapsedMilliseconds);
+
             Console.Read();
         }
     }
@@ -35,13 +38,14 @@ namespace CPUBoundTasks
     {
         public Task<DateTime> WaitFor2Seconds()
         {
-            return  Task.Run(()=> {
+            return Task.Run(() =>
+            {
                 for (int i = 0; i < 10; i++)
                 {
                     Thread.Sleep(500);
                 }
-            return DateTime.Now;
-                });
+                return DateTime.Now;
+            });
         }
     }
 
@@ -50,16 +54,28 @@ namespace CPUBoundTasks
         public async Task<DateTime> WaitFor2Seconds()
         {
 
-            var x = new Func<DateTime>(() => { 
-              for (int i = 0; i < 10; i++)
+            var x = new Func<DateTime>(() =>
+            {
+                for (int i = 0; i < 10; i++)
                 {
                     Thread.Sleep(500);
                 }
                 return DateTime.Now;
             });
 
-            return  await Task.Run(() => x());
-          
+            return await Task.Run(() => x());
+
+        }
+    }
+
+    public class MyService3
+    {
+        public DateTime WaitFor2Seconds(){
+        for(int i=0; i<10; i++)
+        {
+            Thread.Sleep(500);
+        }
+            return DateTime.Now;
         }
     }
 }
